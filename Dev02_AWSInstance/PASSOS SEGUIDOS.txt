@@ -1,0 +1,52 @@
+PASSOS SEGUIDOS:
+
+1. CRIAR A INSTÂNCIA EC2
+-- optei por criar uma instancia usando Ubuntu
+-- por ser a distribuição Linux que uso no meu dia a dia
+-- e me sinto mais confortável no uso
+
+2. CRIAR O VOLUME DE DISCO
+-- após a criação é preciso associar o volume de disco
+-- a uma instância pelo painel de controle do volume
+
+- No PAINEL da EC2 clica na opção VOLUMES e em seguida em CRIAR VOLUME, escolhe o tipo, o tamanho e a zona de disponibilidade (deve ser a mesma em que a instância está). 
+
+- Renomeia o volume para "arquivos"
+
+- Clica com o botão direito sobre o volume e escolhe a opção ASSOCIAR VOLUME, selecione a instância a ser associada e o nome do dispositivo (/dev/xvdbz)
+
+3. ACESSAR A INSTÂNCIA VIA SSH
+
+-- conectar na instancia criada na AWS
+$ ssh -i chavesUbuntuEC2.pem ubuntu@<ip da instancia>
+
+-- verificar os volumes conectados a instância (img01)
+$ lsblk
+
+-- verificar se o volume tem um sistema de arquivos (img01)
+$ sudo file -s /dev/xvdbz
+
+-- formatar o volume (img01)
+$ sudo mkfs.ext4 /dev/xvdbz
+
+--checar o UUID do dispositivo (img02)
+$ sudo blkid
+
+-- criar ponto de montagem para o volume
+$ mkdir arquivos
+
+-- editar o fstab para montagem automática do volume (img03)
+$ sudoedit /etc/fstab
+
+-- após a edição do fstab é preciso recaregá-lo no sistema
+$ sudo systemctl daemon-reload
+
+-- montar o volume no ponto de montagem
+$ sudo mount -a
+
+-- para configurar o ponto de montagem para escrita
+-- mudamos o dono do ponto de montagem de root para
+-- o usuário padrão usado
+$ sudo chown ubuntu:ubuntu arquivos/
+
+
